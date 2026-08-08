@@ -61,6 +61,26 @@ export function ControlPanel({
         execution window.
       </p>
 
+      <div className="rounded-sm border border-border bg-panel-raised/60 p-3">
+        <span className="panel-label">Pre-release checklist</span>
+        <ul className="mt-2 space-y-1.5">
+          {[
+            ["Trajectory collision-free", true],
+            ["Tissue registration locked", true],
+            ["Haemostasis margin verified", true],
+            ["Operator presence detected", state !== "halted"],
+          ].map(([text, ok]) => (
+            <li key={String(text)} className="flex items-center gap-2 text-[11px]">
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: ok ? "var(--safe)" : "var(--critical)" }}
+              />
+              <span className="text-muted-foreground">{text}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="mt-auto space-y-2 rounded-sm border border-critical/40 bg-critical/5 p-3">
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-3.5 w-3.5 text-critical" />

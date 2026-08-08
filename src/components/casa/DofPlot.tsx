@@ -20,7 +20,13 @@ export function DofPlot() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const series: number[][] = TRACES.map(() => new Array(N).fill(0));
+    const series: number[][] = TRACES.map((tr, i) =>
+      Array.from({ length: N }, (_, k) => {
+        const tt = (k - N) * 0.055;
+        const noise = (Math.sin(tt * 17.3 + i) + Math.sin(tt * 29.1 + i * 2)) * 0.02;
+        return Math.sin(tt * tr.freq + tr.phase) * tr.amp + noise;
+      }),
+    );
     let t = 0;
     let raf = 0;
 

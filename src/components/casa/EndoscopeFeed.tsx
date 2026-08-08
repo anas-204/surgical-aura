@@ -12,7 +12,10 @@ export function EndoscopeFeed() {
               width={1536}
               height={1024}
               className="h-full w-full object-cover"
-              style={{ objectPosition: eye === "L" ? "48% 50%" : "52% 50%" }}
+              style={{
+                objectPosition: eye === "L" ? "48% 50%" : "52% 50%",
+                filter: "contrast(1.12) saturate(0.92) brightness(0.7)",
+              }}
             />
             <span className="readout absolute bottom-2 left-2 rounded-sm bg-background/70 px-1.5 py-0.5 text-[10px] text-primary">
               {eye === "L" ? "OPTIC-L" : "OPTIC-R"} · 1080p60
@@ -39,7 +42,14 @@ export function EndoscopeFeed() {
         <circle cx="110" cy="470" r="6" fill="var(--safe)" />
         <circle cx="890" cy="190" r="10" fill="none" stroke="var(--safe)" strokeWidth="2.5" />
         <circle cx="890" cy="190" r="3" fill="var(--safe)" />
-        <text x="906" y="182" fill="var(--safe)" fontSize="16" fontFamily="var(--font-mono)">
+        <text
+          x="872"
+          y="164"
+          fill="var(--safe)"
+          fontSize="16"
+          textAnchor="end"
+          fontFamily="var(--font-mono)"
+        >
           TARGET NODE 04
         </text>
         <text x="126" y="492" fill="var(--safe)" fontSize="16" fontFamily="var(--font-mono)">
