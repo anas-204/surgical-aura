@@ -73,7 +73,7 @@ export function PointCloud() {
   return (
     <div className="relative h-full w-full">
       <div className="grid-backdrop absolute inset-0" />
-      <canvas ref={ref} className="relative h-full w-full" />
+      <canvas ref={ref} className="absolute inset-0 block h-full w-full" />
       <div className="readout pointer-events-none absolute bottom-2 left-2 flex gap-3 text-[10px] text-muted-foreground">
         <span>PTS 1.42k</span>
         <span>RMS 0.31 mm</span>

@@ -97,7 +97,9 @@ export function DofPlot() {
         ))}
         <span className="readout ml-auto text-[10px] text-muted-foreground">1 kHz · 4 s WINDOW</span>
       </div>
-      <canvas ref={ref} className="min-h-0 w-full flex-1" />
+      <div className="relative min-h-0 flex-1">
+        <canvas ref={ref} className="absolute inset-0 block h-full w-full" />
+      </div>
     </div>
   );
 }
