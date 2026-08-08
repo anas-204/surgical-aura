@@ -50,8 +50,8 @@ function Console() {
   const onOverride = useCallback(() => setState("awaiting"), []);
 
   return (
-    <main className="flex h-screen flex-col gap-2 overflow-hidden bg-background p-2">
-      <header className="panel-frame flex shrink-0 items-center gap-4 px-3 py-2">
+    <main className="grid h-screen grid-rows-[auto_minmax(0,1fr)_200px] gap-2 overflow-hidden bg-background p-2">
+      <header className="panel-frame flex items-center gap-4 px-3 py-2">
         <div className="flex items-center gap-2.5">
           <span className="flex h-6 w-6 items-center justify-center rounded-sm border border-primary/60 text-[10px] font-bold text-primary">
             CA
@@ -68,7 +68,7 @@ function Console() {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[300px_minmax(0,1fr)_308px]">
+      <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[300px_minmax(0,1fr)_308px]">
         <div className="grid min-h-0 grid-rows-[minmax(180px,4fr)_minmax(0,6fr)] gap-2">
           <Panel label="3D point cloud · surgical field" bodyClassName="p-0">
             <PointCloud />
@@ -83,7 +83,7 @@ function Console() {
           right={
             <span className="readout text-[10px] text-safe">AI TRAJECTORY · PROPOSED</span>
           }
-          bodyClassName="p-0 min-h-[300px]"
+          bodyClassName="p-0"
         >
           <EndoscopeFeed />
         </Panel>
@@ -98,11 +98,11 @@ function Console() {
         </Panel>
       </div>
 
-      <div className="grid shrink-0 grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1fr)_308px]">
-        <Panel label="6-DOF live coordinates · dual arms" bodyClassName="h-[188px] p-0">
+      <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1fr)_308px]">
+        <Panel label="6-DOF live coordinates · dual arms" bodyClassName="p-0">
           <DofPlot />
         </Panel>
-        <Panel label="AI confidence" bodyClassName="h-[188px] p-0">
+        <Panel label="AI confidence" bodyClassName="p-0">
           <ConfidenceGauge value={confidence} />
         </Panel>
       </div>
