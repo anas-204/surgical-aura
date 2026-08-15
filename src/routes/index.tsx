@@ -1,12 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Panel } from "@/components/casa/Panel";
 import { EndoscopeFeed } from "@/components/casa/EndoscopeFeed";
-import { PointCloud } from "@/components/casa/PointCloud";
 import { TelemetryMetrics } from "@/components/casa/TelemetryMetrics";
 import { ControlPanel } from "@/components/casa/ControlPanel";
-import { DofPlot } from "@/components/casa/DofPlot";
-import { ConfidenceGauge } from "@/components/casa/ConfidenceGauge";
+import { ExecutionLog, type LogEntry } from "@/components/casa/ExecutionLog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,42 +13,91 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Real-time telemetry console for C.A.S.A. compact autonomous surgical arms: stereoscopic feed, AI trajectory approval, 6-DOF plotting and confidence scoring.",
+          "Real-time telemetry console for C.A.S.A. compact autonomous surgical arms: stereoscopic feed, AI trajectory approval and kinematic telemetry.",
       },
       { property: "og:title", content: "C.A.S.A. — Surgical Robotics Telemetry Console" },
       {
         property: "og:description",
         content:
-          "Supervised-autonomy console for pre-hospital trauma intervention: stereo endoscopy, 3D point cloud, kinematic stress and 6-DOF live plots.",
+          "Supervised-autonomy console for pre-hospital trauma intervention: stereo endoscopy, kinematic stress telemetry and command release control.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Console,
 });
 
+type State = "awaiting" | "approved" | "halted" | "complete";
+
+const STEPS: { at: number; text: string; level: LogEntry["level"] }[] = [
+  { at: 0, text: "Operator approval recorded · command released to ARM-A / ARM-B", level: "safe" },
+  { at: 12, text: "Trajectory uploaded · 6-DOF waypoints locked", level: "info" },
+  { at: 30, text: "Arms in motion · dead-man switch armed", level: "info" },
+  { at: 52, text: "Tip force 0.41 N within envelope", level: "safe" },
+  { at: 74, text: "Haemostasis margin holding · no collision events", level: "safe" },
+  { at: 92, text: "Retracting to safe pose", level: "info" },
+  { at: 100, text: "Command executed successfully · awaiting next proposal", level: "safe" },
+];
+
+function stamp() {
+  return new Date().toISOString().slice(11, 19);
+}
+
 function Console() {
-  const [state, setState] = useState<"awaiting" | "approved" | "halted">("awaiting");
-  const [confidence, setConfidence] = useState(98.5);
+  const [state, setState] = useState<State>("awaiting");
+  const [progress, setProgress] = useState(0);
+  const [log, setLog] = useState<LogEntry[]>([]);
   const [clock, setClock] = useState("--:--:--");
+  const emitted = useRef<Set<number>>(new Set());
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setClock(new Date().toISOString().slice(11, 19));
-      setConfidence((c) => {
-        if (state === "halted") return Math.max(48, c - 3.4);
-        const target = state === "approved" ? 97.2 : 98.5;
-        return Math.min(99.4, Math.max(90, target + (Math.random() - 0.5) * 0.6));
-      });
-    }, 1000);
+    const id = setInterval(() => setClock(stamp()), 1000);
     return () => clearInterval(id);
-  }, [state]);
+  }, []);
 
-  const onApprove = useCallback(() => setState("approved"), []);
-  const onHalt = useCallback(() => setState("halted"), []);
-  const onOverride = useCallback(() => setState("awaiting"), []);
+  const append = useCallback((text: string, level: LogEntry["level"]) => {
+    setLog((l) => [...l, { t: stamp(), text, level }]);
+  }, []);
+
+  useEffect(() => {
+    if (state !== "approved") return;
+    const id = setInterval(() => {
+      setProgress((p) => {
+        const next = Math.min(100, p + 2);
+        const step = STEPS.find((s) => s.at > p && s.at <= next);
+        if (step && !emitted.current.has(step.at)) {
+          emitted.current.add(step.at);
+          append(step.text, step.level);
+        }
+        if (next >= 100) setState("complete");
+        return next;
+      });
+    }, 180);
+    return () => clearInterval(id);
+  }, [state, append]);
+
+  const onApprove = useCallback(() => {
+    emitted.current = new Set([0]);
+    setProgress(0);
+    setState("approved");
+    append(STEPS[0]!.text, STEPS[0]!.level);
+  }, [append]);
+
+  const onHalt = useCallback(() => {
+    setState("halted");
+    append("SAFETY HALT engaged · motion stopped, brakes locked", "critical");
+  }, [append]);
+
+  const onOverride = useCallback(() => {
+    setState("awaiting");
+    setProgress(0);
+    emitted.current = new Set();
+    append("Manual override · control returned to operator", "warning");
+  }, [append]);
 
   return (
-    <main className="grid h-screen grid-rows-[auto_minmax(0,1fr)_200px] gap-2 overflow-hidden bg-background p-2">
+    <main className="grid h-screen grid-rows-[auto_minmax(0,1fr)_168px] gap-2 overflow-hidden bg-background p-2">
       <header className="panel-frame flex items-center gap-4 px-3 py-2">
         <div className="flex items-center gap-2.5">
           <span className="flex h-6 w-6 items-center justify-center rounded-sm border border-primary/60 text-[10px] font-bold text-primary">
@@ -69,19 +116,32 @@ function Console() {
       </header>
 
       <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[300px_minmax(0,1fr)_308px]">
-        <div className="grid min-h-0 grid-rows-[minmax(180px,4fr)_minmax(0,6fr)] gap-2">
-          <Panel label="3D point cloud · surgical field" bodyClassName="p-0">
-            <PointCloud />
-          </Panel>
-          <Panel label="Telemetry metrics" bodyClassName="p-0">
-            <TelemetryMetrics />
-          </Panel>
-        </div>
+        <Panel label="Telemetry metrics" bodyClassName="p-0">
+          <TelemetryMetrics />
+        </Panel>
 
         <Panel
           label="Stereoscopic endoscopic feed"
           right={
-            <span className="readout text-[10px] text-safe">AI TRAJECTORY · PROPOSED</span>
+            <span
+              className="readout text-[10px]"
+              style={{
+                color:
+                  state === "halted"
+                    ? "var(--critical)"
+                    : state === "awaiting"
+                      ? "var(--warning)"
+                      : "var(--safe)",
+              }}
+            >
+              {state === "awaiting"
+                ? "AI TRAJECTORY · PROPOSED"
+                : state === "approved"
+                  ? `AI TRAJECTORY · EXECUTING ${progress}%`
+                  : state === "complete"
+                    ? "AI TRAJECTORY · COMPLETE"
+                    : "MOTION HALTED"}
+            </span>
           }
           bodyClassName="p-0"
         >
@@ -91,6 +151,7 @@ function Console() {
         <Panel label="Control & state" bodyClassName="p-0">
           <ControlPanel
             state={state}
+            progress={progress}
             onApprove={onApprove}
             onHalt={onHalt}
             onOverride={onOverride}
@@ -98,14 +159,9 @@ function Console() {
         </Panel>
       </div>
 
-      <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1fr)_308px]">
-        <Panel label="6-DOF live coordinates · dual arms" bodyClassName="p-0">
-          <DofPlot />
-        </Panel>
-        <Panel label="AI confidence" bodyClassName="p-0">
-          <ConfidenceGauge value={confidence} />
-        </Panel>
-      </div>
+      <Panel label="Command & event log" bodyClassName="p-0">
+        <ExecutionLog entries={log} />
+      </Panel>
     </main>
   );
 }

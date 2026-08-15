@@ -1,14 +1,16 @@
-import { AlertTriangle, Check, Hand, OctagonX, ShieldAlert } from "lucide-react";
+import { AlertTriangle, Check, Hand, Loader2, OctagonX, ShieldAlert } from "lucide-react";
 
-type State = "awaiting" | "approved" | "halted";
+type State = "awaiting" | "approved" | "halted" | "complete";
 
 export function ControlPanel({
   state,
+  progress,
   onApprove,
   onHalt,
   onOverride,
 }: {
   state: State;
+  progress: number;
   onApprove: () => void;
   onHalt: () => void;
   onOverride: () => void;
@@ -18,7 +20,9 @@ export function ControlPanel({
       ? { text: "Awaiting Operator Approval...", color: "var(--warning)", tag: "S3 · SUPERVISED" }
       : state === "approved"
         ? { text: "Command Released — Executing", color: "var(--safe)", tag: "S4 · AUTONOMOUS" }
-        : { text: "Safety Halt Engaged", color: "var(--critical)", tag: "S0 · HALTED" };
+        : state === "complete"
+          ? { text: "Command Executed — Idle", color: "var(--safe)", tag: "S2 · IDLE" }
+          : { text: "Safety Halt Engaged", color: "var(--critical)", tag: "S0 · HALTED" };
 
   return (
     <div className="flex h-full flex-col gap-3 p-3">
@@ -45,21 +49,40 @@ export function ControlPanel({
             {meta.text}
           </p>
         </div>
+        {state === "approved" || state === "complete" ? (
+          <div className="mt-3">
+            <div className="readout flex justify-between text-[10px] text-muted-foreground">
+              <span>Execution</span>
+              <span style={{ color: meta.color }}>{progress}%</span>
+            </div>
+            <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-background">
+              <div
+                className="h-full rounded-full transition-all duration-200"
+                style={{ width: `${progress}%`, backgroundColor: meta.color }}
+              />
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <button
         type="button"
         onClick={onApprove}
-        disabled={state === "halted"}
+        disabled={state === "halted" || state === "approved"}
         className="group flex w-full items-center justify-center gap-2 rounded-sm border border-safe/60 bg-safe/10 px-4 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-safe transition-all hover:bg-safe/20 hover:glow-safe disabled:cursor-not-allowed disabled:opacity-35"
       >
-        <Check className="h-4 w-4" strokeWidth={2.5} />
-        Approve
+        {state === "approved" ? (
+          <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.5} />
+        ) : (
+          <Check className="h-4 w-4" strokeWidth={2.5} />
+        )}
+        {state === "approved" ? "Executing" : state === "complete" ? "Approve next" : "Approve"}
       </button>
       <p className="readout px-1 text-[10px] leading-relaxed text-muted-foreground">
         Releases the proposed trajectory to both arms. Dead-man switch remains active for the full
         execution window.
       </p>
+
 
       <div className="rounded-sm border border-border bg-panel-raised/60 p-3">
         <span className="panel-label">Pre-release checklist</span>
