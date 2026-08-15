@@ -44,8 +44,8 @@ export function ConfidenceGauge({ value }: { value: number }) {
           );
         })}
       </svg>
-      <div className="-mt-8 flex flex-col items-center">
-        <span className="readout text-4xl font-semibold" style={{ color }}>
+      <div className="-mt-5 flex flex-col items-center">
+        <span className="readout text-3xl font-semibold" style={{ color }}>
           {value.toFixed(1)}%
         </span>
         <span className="panel-label mt-1">AI Confidence Score</span>

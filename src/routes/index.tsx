@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Panel } from "@/components/casa/Panel";
 import { EndoscopeFeed } from "@/components/casa/EndoscopeFeed";
 import { TelemetryMetrics } from "@/components/casa/TelemetryMetrics";
 import { ControlPanel } from "@/components/casa/ControlPanel";
-import { ExecutionLog, type LogEntry } from "@/components/casa/ExecutionLog";
+import { DofPlot } from "@/components/casa/DofPlot";
+import { ConfidenceGauge } from "@/components/casa/ConfidenceGauge";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,16 +31,6 @@ export const Route = createFileRoute("/")({
 
 type State = "awaiting" | "approved" | "halted" | "complete";
 
-const STEPS: { at: number; text: string; level: LogEntry["level"] }[] = [
-  { at: 0, text: "Operator approval recorded · command released to ARM-A / ARM-B", level: "safe" },
-  { at: 12, text: "Trajectory uploaded · 6-DOF waypoints locked", level: "info" },
-  { at: 30, text: "Arms in motion · dead-man switch armed", level: "info" },
-  { at: 52, text: "Tip force 0.41 N within envelope", level: "safe" },
-  { at: 74, text: "Haemostasis margin holding · no collision events", level: "safe" },
-  { at: 92, text: "Retracting to safe pose", level: "info" },
-  { at: 100, text: "Command executed successfully · awaiting next proposal", level: "safe" },
-];
-
 function stamp() {
   return new Date().toISOString().slice(11, 19);
 }
@@ -47,17 +38,11 @@ function stamp() {
 function Console() {
   const [state, setState] = useState<State>("awaiting");
   const [progress, setProgress] = useState(0);
-  const [log, setLog] = useState<LogEntry[]>([]);
   const [clock, setClock] = useState("--:--:--");
-  const emitted = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     const id = setInterval(() => setClock(stamp()), 1000);
     return () => clearInterval(id);
-  }, []);
-
-  const append = useCallback((text: string, level: LogEntry["level"]) => {
-    setLog((l) => [...l, { t: stamp(), text, level }]);
   }, []);
 
   useEffect(() => {
@@ -65,39 +50,29 @@ function Console() {
     const id = setInterval(() => {
       setProgress((p) => {
         const next = Math.min(100, p + 2);
-        const step = STEPS.find((s) => s.at > p && s.at <= next);
-        if (step && !emitted.current.has(step.at)) {
-          emitted.current.add(step.at);
-          append(step.text, step.level);
-        }
         if (next >= 100) setState("complete");
         return next;
       });
     }, 180);
     return () => clearInterval(id);
-  }, [state, append]);
+  }, [state]);
 
   const onApprove = useCallback(() => {
-    emitted.current = new Set([0]);
     setProgress(0);
     setState("approved");
-    append(STEPS[0]!.text, STEPS[0]!.level);
-  }, [append]);
+  }, []);
 
-  const onHalt = useCallback(() => {
-    setState("halted");
-    append("SAFETY HALT engaged · motion stopped, brakes locked", "critical");
-  }, [append]);
+  const onHalt = useCallback(() => setState("halted"), []);
 
   const onOverride = useCallback(() => {
     setState("awaiting");
     setProgress(0);
-    emitted.current = new Set();
-    append("Manual override · control returned to operator", "warning");
-  }, [append]);
+  }, []);
+
+  const confidence = state === "halted" ? 61.2 : state === "awaiting" ? 98.5 : 98.5;
 
   return (
-    <main className="grid h-screen grid-rows-[auto_minmax(0,1fr)_168px] gap-2 overflow-hidden bg-background p-2">
+    <main className="grid h-screen grid-rows-[auto_minmax(0,1fr)_200px] gap-2 overflow-hidden bg-background p-2">
       <header className="panel-frame flex items-center gap-4 px-3 py-2">
         <div className="flex items-center gap-2.5">
           <span className="flex h-6 w-6 items-center justify-center rounded-sm border border-primary/60 text-[10px] font-bold text-primary">
@@ -159,9 +134,14 @@ function Console() {
         </Panel>
       </div>
 
-      <Panel label="Command & event log" bodyClassName="p-0">
-        <ExecutionLog entries={log} />
-      </Panel>
+      <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1fr)_308px]">
+        <Panel label="6-DOF kinematic plotter · dual arm" bodyClassName="p-0">
+          <DofPlot />
+        </Panel>
+        <Panel label="AI confidence" bodyClassName="p-0">
+          <ConfidenceGauge value={confidence} />
+        </Panel>
+      </div>
     </main>
   );
 }
