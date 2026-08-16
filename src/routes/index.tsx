@@ -91,9 +91,15 @@ function Console() {
       </header>
 
       <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[300px_minmax(0,1fr)_308px]">
-        <Panel label="Telemetry metrics" bodyClassName="p-0">
-          <TelemetryMetrics />
-        </Panel>
+        <div className="grid min-h-0 grid-rows-[minmax(160px,0.9fr)_minmax(0,1.6fr)] gap-2">
+          <Panel label="3D point cloud · surgical field" bodyClassName="p-0">
+            <PointCloud />
+          </Panel>
+          <Panel label="Telemetry metrics" bodyClassName="p-0">
+            <TelemetryMetrics />
+          </Panel>
+        </div>
+
 
         <Panel
           label="Stereoscopic endoscopic feed"
