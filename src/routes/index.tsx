@@ -6,6 +6,8 @@ import { TelemetryMetrics } from "@/components/casa/TelemetryMetrics";
 import { ControlPanel } from "@/components/casa/ControlPanel";
 import { DofPlot } from "@/components/casa/DofPlot";
 import { ConfidenceGauge } from "@/components/casa/ConfidenceGauge";
+import { PointCloud } from "@/components/casa/PointCloud";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
