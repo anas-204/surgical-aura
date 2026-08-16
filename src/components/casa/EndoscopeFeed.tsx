@@ -38,7 +38,43 @@ export function EndoscopeFeed() {
         preserveAspectRatio="none"
         aria-hidden="true"
       >
+        <g className="status-pulse">
+          <rect
+            x="380"
+            y="150"
+            width="300"
+            height="200"
+            fill="none"
+            stroke="var(--safe)"
+            strokeWidth="3"
+            style={{ filter: "drop-shadow(0 0 6px var(--safe))" }}
+          />
+          {[
+            [380, 150, 1, 1],
+            [680, 150, -1, 1],
+            [380, 350, 1, -1],
+            [680, 350, -1, -1],
+          ].map(([x, y, sx, sy]) => (
+            <path
+              key={`${x}-${y}`}
+              d={`M ${x!} ${y! + sy! * 34} L ${x!} ${y!} L ${x! + sx! * 44} ${y!}`}
+              fill="none"
+              stroke="var(--safe)"
+              strokeWidth="6"
+            />
+          ))}
+          <text
+            x="380"
+            y="140"
+            fill="var(--safe)"
+            fontSize="16"
+            fontFamily="var(--font-mono)"
+          >
+            TARGET ROI · LESION 02 · CONF 0.98
+          </text>
+        </g>
         <path
+
           d="M110 470 C 250 380, 320 250, 480 250 S 720 340, 890 190"
           fill="none"
           stroke="var(--safe)"
