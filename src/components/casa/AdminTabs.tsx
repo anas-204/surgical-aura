@@ -26,14 +26,6 @@ function NeedleArea() {
           <line x1="240" y1="120" x2="240" y2="70" />
           <line x1="150" y1="90" x2="150" y2="40" />
         </g>
-        <g stroke="var(--safe)" strokeWidth="0.5" opacity="0.35">
-          {[0.25, 0.5, 0.75].map((f) => (
-            <polygon
-              key={f}
-              points={`${60 + f * 0} ${120 - f * 50},150 ${150 - f * 50},240 ${120 - f * 50},150 ${90 - f * 50}`}
-            />
-          ))}
-        </g>
         <line
           x1="120"
           y1="10"
