@@ -1,4 +1,29 @@
 import feedImage from "@/assets/endoscope-feed.jpg";
+import { CameraToolbar } from "./CameraToolbar";
+
+const LANDMARKS = [
+  { x: 420, y: 190, d: 0.1 },
+  { x: 470, y: 175, d: 0.15 },
+  { x: 520, y: 205, d: 0.3 },
+  { x: 575, y: 195, d: 0.45 },
+  { x: 630, y: 215, d: 0.7 },
+  { x: 655, y: 260, d: 0.9 },
+  { x: 610, y: 300, d: 0.8 },
+  { x: 550, y: 315, d: 0.6 },
+  { x: 495, y: 300, d: 0.35 },
+  { x: 440, y: 275, d: 0.12 },
+  { x: 415, y: 235, d: 0.05 },
+  { x: 500, y: 250, d: 0.25 },
+  { x: 560, y: 255, d: 0.55 },
+  { x: 605, y: 240, d: 0.75 },
+];
+
+function dotColor(d: number) {
+  if (d < 0.25) return "var(--critical)";
+  if (d < 0.55) return "var(--warning)";
+  return "var(--safe)";
+}
+
 
 export function EndoscopeFeed() {
   return (
@@ -24,7 +49,7 @@ export function EndoscopeFeed() {
                   "radial-gradient(ellipse at 50% 45%, transparent 38%, oklch(0 0 0 / 0.55) 78%, oklch(0 0 0 / 0.92) 100%)",
               }}
             />
-            <span className="readout absolute bottom-2 left-2 rounded-sm bg-background/70 px-1.5 py-0.5 text-[10px] text-primary">
+            <span className="readout absolute bottom-11 left-2 rounded-sm bg-background/70 px-1.5 py-0.5 text-[10px] text-primary">
               {eye === "L" ? "OPTIC-L" : "OPTIC-R"} · 1080p60
             </span>
           </div>
@@ -73,6 +98,40 @@ export function EndoscopeFeed() {
             TARGET ROI · LESION 02 · CONF 0.98
           </text>
         </g>
+
+        {/* Landmark vertices — colored by proximity to the approaching tool */}
+        {LANDMARKS.map((p) => (
+          <g key={`${p.x}-${p.y}`}>
+            <circle
+              cx={p.x}
+              cy={p.y}
+              r="5"
+              fill={dotColor(p.d)}
+              style={{ filter: `drop-shadow(0 0 5px ${dotColor(p.d)})` }}
+            />
+          </g>
+        ))}
+
+        {/* Approaching surgical tool */}
+        <g>
+          <path
+            d="M 250 545 L 405 245"
+            stroke="oklch(0.72 0.02 250)"
+            strokeWidth="13"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 250 545 L 405 245"
+            stroke="oklch(0.88 0.01 250)"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <circle cx="405" cy="245" r="7" fill="var(--critical)" style={{ filter: "drop-shadow(0 0 8px var(--critical))" }} />
+          <text x="262" y="560" fill="var(--muted-foreground)" fontSize="15" fontFamily="var(--font-mono)">
+            TOOL-A · 3.2 mm TO V-041
+          </text>
+        </g>
+
         <path
 
           d="M110 470 C 250 380, 320 250, 480 250 S 720 340, 890 190"
@@ -117,6 +176,9 @@ export function EndoscopeFeed() {
         <span className="text-critical">REC</span>
         <span className="text-muted-foreground">SESSION 0x7A14 · T+00:14:07</span>
       </div>
+
+      <CameraToolbar />
     </div>
   );
 }
+

@@ -6,7 +6,10 @@ import { TelemetryMetrics } from "@/components/casa/TelemetryMetrics";
 import { ControlPanel } from "@/components/casa/ControlPanel";
 import { DofPlot } from "@/components/casa/DofPlot";
 import { ConfidenceGauge } from "@/components/casa/ConfidenceGauge";
-import { PointCloud } from "@/components/casa/PointCloud";
+import { AuxCameras } from "@/components/casa/AuxCameras";
+import { AdminTabs } from "@/components/casa/AdminTabs";
+import { TerminalLog } from "@/components/casa/TerminalLog";
+
 
 
 export const Route = createFileRoute("/")({
@@ -74,7 +77,7 @@ function Console() {
   const confidence = state === "halted" ? 61.2 : state === "awaiting" ? 98.5 : 98.5;
 
   return (
-    <main className="grid h-screen grid-rows-[auto_minmax(0,1fr)_200px] gap-2 overflow-hidden bg-background p-2">
+    <main className="grid h-screen grid-rows-[auto_minmax(0,1fr)_230px] gap-2 overflow-hidden bg-background p-2">
       <header className="panel-frame flex items-center gap-4 px-3 py-2">
         <div className="flex items-center gap-2.5">
           <span className="flex h-6 w-6 items-center justify-center rounded-sm border border-primary/60 text-[10px] font-bold text-primary">
@@ -92,64 +95,81 @@ function Console() {
         </div>
       </header>
 
-      <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[300px_minmax(0,1fr)_308px]">
-        <div className="grid min-h-0 grid-rows-[minmax(160px,0.9fr)_minmax(0,1.6fr)] gap-2">
-          <Panel label="3D point cloud · surgical field" bodyClassName="p-0">
-            <PointCloud />
+      <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[184px_minmax(0,1fr)_330px]">
+        <Panel label="Telemetry metrics" bodyClassName="p-0" className="hidden lg:flex">
+          <TelemetryMetrics />
+        </Panel>
+
+        <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_150px] gap-2">
+          <Panel
+            label="Stereoscopic endoscopic feed · CV overlay"
+            right={
+              <span
+                className="readout text-[10px]"
+                style={{
+                  color:
+                    state === "halted"
+                      ? "var(--critical)"
+                      : state === "awaiting"
+                        ? "var(--warning)"
+                        : "var(--safe)",
+                }}
+              >
+                {state === "awaiting"
+                  ? "AI TRAJECTORY · PROPOSED"
+                  : state === "approved"
+                    ? `AI TRAJECTORY · EXECUTING ${progress}%`
+                    : state === "complete"
+                      ? "AI TRAJECTORY · COMPLETE"
+                      : "MOTION HALTED"}
+              </span>
+            }
+            bodyClassName="p-0"
+          >
+            <EndoscopeFeed />
           </Panel>
-          <Panel label="Telemetry metrics" bodyClassName="p-0">
-            <TelemetryMetrics />
+
+          <Panel
+            label="Auxiliary cameras · arm & wrist"
+            right={
+              <span className="readout text-[10px] text-muted-foreground">
+                SEGMENTATION DISABLED
+              </span>
+            }
+            bodyClassName="p-0"
+          >
+            <AuxCameras />
           </Panel>
         </div>
 
-
-        <Panel
-          label="Stereoscopic endoscopic feed"
-          right={
-            <span
-              className="readout text-[10px]"
-              style={{
-                color:
-                  state === "halted"
-                    ? "var(--critical)"
-                    : state === "awaiting"
-                      ? "var(--warning)"
-                      : "var(--safe)",
-              }}
-            >
-              {state === "awaiting"
-                ? "AI TRAJECTORY · PROPOSED"
-                : state === "approved"
-                  ? `AI TRAJECTORY · EXECUTING ${progress}%`
-                  : state === "complete"
-                    ? "AI TRAJECTORY · COMPLETE"
-                    : "MOTION HALTED"}
-            </span>
-          }
-          bodyClassName="p-0"
-        >
-          <EndoscopeFeed />
-        </Panel>
-
-        <Panel label="Control & state" bodyClassName="p-0">
-          <ControlPanel
-            state={state}
-            progress={progress}
-            onApprove={onApprove}
-            onHalt={onHalt}
-            onOverride={onOverride}
-          />
-        </Panel>
+        <div className="grid min-h-0 grid-rows-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-2">
+          <Panel label="Advanced diagnostics" bodyClassName="p-0">
+            <AdminTabs />
+          </Panel>
+          <Panel label="Human-in-the-loop control" bodyClassName="p-0 overflow-auto">
+            <ControlPanel
+              state={state}
+              progress={progress}
+              onApprove={onApprove}
+              onHalt={onHalt}
+              onOverride={onOverride}
+            />
+          </Panel>
+        </div>
       </div>
 
-      <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1fr)_308px]">
+      <div className="grid min-h-0 grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_260px]">
+        <Panel label="System console" bodyClassName="p-0">
+          <TerminalLog />
+        </Panel>
         <Panel label="6-DOF kinematic plotter · dual arm" bodyClassName="p-0">
           <DofPlot />
         </Panel>
-        <Panel label="AI confidence" bodyClassName="p-0">
+        <Panel label="AI confidence score" bodyClassName="p-0">
           <ConfidenceGauge value={confidence} />
         </Panel>
       </div>
     </main>
   );
 }
+
