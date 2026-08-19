@@ -98,6 +98,40 @@ export function EndoscopeFeed() {
             TARGET ROI · LESION 02 · CONF 0.98
           </text>
         </g>
+
+        {/* Landmark vertices — colored by proximity to the approaching tool */}
+        {LANDMARKS.map((p) => (
+          <g key={`${p.x}-${p.y}`}>
+            <circle
+              cx={p.x}
+              cy={p.y}
+              r="5"
+              fill={dotColor(p.d)}
+              style={{ filter: `drop-shadow(0 0 5px ${dotColor(p.d)})` }}
+            />
+          </g>
+        ))}
+
+        {/* Approaching surgical tool */}
+        <g>
+          <path
+            d="M 250 545 L 405 245"
+            stroke="oklch(0.72 0.02 250)"
+            strokeWidth="13"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 250 545 L 405 245"
+            stroke="oklch(0.88 0.01 250)"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <circle cx="405" cy="245" r="7" fill="var(--critical)" style={{ filter: "drop-shadow(0 0 8px var(--critical))" }} />
+          <text x="262" y="560" fill="var(--muted-foreground)" fontSize="15" fontFamily="var(--font-mono)">
+            TOOL-A · 3.2 mm TO V-041
+          </text>
+        </g>
+
         <path
 
           d="M110 470 C 250 380, 320 250, 480 250 S 720 340, 890 190"
