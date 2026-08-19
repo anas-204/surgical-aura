@@ -176,6 +176,9 @@ export function EndoscopeFeed() {
         <span className="text-critical">REC</span>
         <span className="text-muted-foreground">SESSION 0x7A14 · T+00:14:07</span>
       </div>
+
+      <CameraToolbar />
     </div>
   );
 }
+
