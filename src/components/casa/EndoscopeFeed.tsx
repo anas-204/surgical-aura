@@ -1,4 +1,29 @@
 import feedImage from "@/assets/endoscope-feed.jpg";
+import { CameraToolbar } from "./CameraToolbar";
+
+const LANDMARKS = [
+  { x: 420, y: 190, d: 0.1 },
+  { x: 470, y: 175, d: 0.15 },
+  { x: 520, y: 205, d: 0.3 },
+  { x: 575, y: 195, d: 0.45 },
+  { x: 630, y: 215, d: 0.7 },
+  { x: 655, y: 260, d: 0.9 },
+  { x: 610, y: 300, d: 0.8 },
+  { x: 550, y: 315, d: 0.6 },
+  { x: 495, y: 300, d: 0.35 },
+  { x: 440, y: 275, d: 0.12 },
+  { x: 415, y: 235, d: 0.05 },
+  { x: 500, y: 250, d: 0.25 },
+  { x: 560, y: 255, d: 0.55 },
+  { x: 605, y: 240, d: 0.75 },
+];
+
+function dotColor(d: number) {
+  if (d < 0.25) return "var(--critical)";
+  if (d < 0.55) return "var(--warning)";
+  return "var(--safe)";
+}
+
 
 export function EndoscopeFeed() {
   return (
