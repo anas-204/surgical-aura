@@ -9,7 +9,7 @@ export function ConfidenceGauge({ value }: { value: number }) {
 
   return (
     <div className="flex h-full flex-col items-center justify-center px-3 py-2">
-      <div className="relative w-full max-w-[190px]">
+      <div className="relative w-full max-w-[150px]">
         <svg viewBox="0 0 200 200" className="w-full" aria-hidden="true">
           <circle
             cx="100"
