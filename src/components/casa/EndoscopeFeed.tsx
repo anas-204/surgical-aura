@@ -39,14 +39,14 @@ export function EndoscopeFeed() {
               className="h-full w-full object-cover"
               style={{
                 objectPosition: eye === "L" ? "48% 50%" : "52% 50%",
-                filter: "contrast(1.2) saturate(0.85) brightness(0.52)",
+                filter: "contrast(1.18) saturate(0.95) brightness(0.62)",
               }}
             />
             <div
               className="pointer-events-none absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at 50% 45%, transparent 38%, oklch(0 0 0 / 0.55) 78%, oklch(0 0 0 / 0.92) 100%)",
+                  "radial-gradient(ellipse at 50% 45%, transparent 46%, oklch(0 0 0 / 0.4) 80%, oklch(0 0 0 / 0.78) 100%)",
               }}
             />
             <span className="readout absolute bottom-11 left-2 rounded-sm bg-background/70 px-1.5 py-0.5 text-[10px] text-primary">
