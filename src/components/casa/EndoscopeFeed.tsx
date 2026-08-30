@@ -46,7 +46,7 @@ export function EndoscopeFeed() {
               className="pointer-events-none absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse at 50% 45%, transparent 38%, oklch(0 0 0 / 0.55) 78%, oklch(0 0 0 / 0.92) 100%)",
+                  "radial-gradient(ellipse at 50% 45%, transparent 52%, oklch(0 0 0 / 0.28) 82%, oklch(0 0 0 / 0.6) 100%)",
               }}
             />
             <span className="readout absolute bottom-11 left-2 rounded-sm bg-background/70 px-1.5 py-0.5 text-[10px] text-primary">
