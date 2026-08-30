@@ -9,7 +9,7 @@ export function ConfidenceGauge({ value }: { value: number }) {
 
   return (
     <div className="flex h-full flex-col items-center justify-center px-3 py-2">
-      <div className="relative w-full max-w-[150px]">
+      <div className="relative w-full max-w-[132px]">
         <svg viewBox="0 0 200 200" className="w-full" aria-hidden="true">
           <circle
             cx="100"
@@ -43,8 +43,8 @@ export function ConfidenceGauge({ value }: { value: number }) {
           <span className="panel-label mt-1.5 text-center leading-tight">AI Confidence</span>
         </div>
       </div>
-      <span className="readout mt-2 text-[10px]" style={{ color }}>
-        {safe ? "WITHIN SAFE ENVELOPE" : warn ? "MARGINAL — MONITOR" : "BELOW THRESHOLD — HALT"}
+      <span className="readout mt-1 text-[9px]" style={{ color }}>
+        {safe ? "SAFE ENVELOPE" : warn ? "MARGINAL" : "BELOW THRESHOLD"}
       </span>
     </div>
   );
