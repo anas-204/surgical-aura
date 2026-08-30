@@ -186,3 +186,16 @@
 @utility status-pulse {
   animation: casa-pulse 1.4s ease-in-out infinite;
 }
+
+@utility hazard-stripes {
+  background-image: repeating-linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--warning) 70%, transparent) 0 10px,
+      transparent 10px 26px
+    ),
+    linear-gradient(180deg, var(--critical), color-mix(in oklab, var(--critical) 72%, black));
+  background-position:
+    0 0,
+    0 0;
+  box-shadow: 0 0 18px color-mix(in oklab, var(--critical) 45%, transparent);
+}

@@ -39,7 +39,7 @@ export function EndoscopeFeed() {
               className="h-full w-full object-cover"
               style={{
                 objectPosition: eye === "L" ? "48% 50%" : "52% 50%",
-                filter: "contrast(1.2) saturate(0.85) brightness(0.52)",
+                filter: "contrast(1.12) saturate(1.05) brightness(0.95)",
               }}
             />
             <div
