@@ -127,7 +127,7 @@ export function EndoscopeFeed() {
             strokeLinecap="round"
           />
           <circle cx="405" cy="245" r="7" fill="var(--critical)" style={{ filter: "drop-shadow(0 0 8px var(--critical))" }} />
-          <text x="262" y="560" fill="var(--muted-foreground)" fontSize="15" fontFamily="var(--font-mono)">
+          <text x="262" y="512" fill="var(--muted-foreground)" fontSize="15" fontFamily="var(--font-mono)">
             TOOL-A · 3.2 mm TO V-041
           </text>
         </g>
