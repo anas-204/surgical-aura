@@ -87,7 +87,7 @@ export function ControlPanel({
 
 
 
-      <div className="mt-auto space-y-2 rounded-sm border border-critical/40 bg-critical/5 p-3">
+      <div className="mt-auto space-y-2 rounded-sm border border-critical/40 bg-critical/5 p-2.5">
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-3.5 w-3.5 text-critical" />
           <span className="panel-label" style={{ color: "var(--critical)" }}>
@@ -97,7 +97,7 @@ export function ControlPanel({
         <button
           type="button"
           onClick={onHalt}
-          className="flex w-full items-center justify-center gap-2 rounded-sm border border-critical bg-critical/15 px-3 py-3.5 text-sm font-semibold uppercase tracking-[0.18em] text-critical transition-all hover:bg-critical/30 hover:glow-critical"
+          className="flex w-full items-center justify-center gap-2 rounded-sm border border-critical bg-critical/15 px-3 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-critical transition-all hover:bg-critical/30 hover:glow-critical"
         >
           <OctagonX className="h-4 w-4" strokeWidth={2.5} />
           Safety halt
@@ -106,7 +106,7 @@ export function ControlPanel({
           <button
             type="button"
             onClick={onOverride}
-            className="flex items-center justify-center gap-1.5 rounded-sm border border-critical/50 px-2 py-2.5 text-[11px] font-medium uppercase tracking-[0.12em] text-critical transition-colors hover:bg-critical/15"
+            className="flex items-center justify-center gap-1.5 rounded-sm border border-critical/50 px-2 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-critical transition-colors hover:bg-critical/15"
           >
             <Hand className="h-3.5 w-3.5" />
             Take control
@@ -114,7 +114,7 @@ export function ControlPanel({
           <button
             type="button"
             onClick={onOverride}
-            className="flex items-center justify-center gap-1.5 rounded-sm border border-warning/50 px-2 py-2.5 text-[11px] font-medium uppercase tracking-[0.12em] text-warning transition-colors hover:bg-warning/15"
+            className="flex items-center justify-center gap-1.5 rounded-sm border border-warning/50 px-2 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-warning transition-colors hover:bg-warning/15"
           >
             <AlertTriangle className="h-3.5 w-3.5" />
             Retract

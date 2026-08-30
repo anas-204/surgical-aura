@@ -142,7 +142,7 @@ function Console() {
           </Panel>
         </div>
 
-        <div className="grid min-h-0 grid-rows-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-2">
+        <div className="grid min-h-0 grid-rows-[minmax(0,0.75fr)_minmax(0,1.25fr)] gap-2">
           <Panel label="Advanced diagnostics" bodyClassName="p-0">
             <AdminTabs />
           </Panel>
