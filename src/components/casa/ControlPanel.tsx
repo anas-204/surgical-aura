@@ -69,19 +69,19 @@ export function ControlPanel({
         type="button"
         onClick={onApprove}
         disabled={state === "halted" || state === "approved"}
-        className="group flex w-full items-center justify-center gap-2 rounded-sm border border-safe/60 bg-safe/10 px-4 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-safe transition-all hover:bg-safe/20 hover:glow-safe disabled:cursor-not-allowed disabled:opacity-35"
+        className="group flex w-full items-center justify-center gap-2 rounded-sm border border-safe/60 bg-safe/10 px-4 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-safe transition-all hover:bg-safe/20 hover:glow-safe disabled:cursor-not-allowed disabled:opacity-35"
       >
         {state === "approved" ? (
           <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.5} />
         ) : (
           <Check className="h-4 w-4" strokeWidth={2.5} />
         )}
-        {state === "approved" ? "Executing" : state === "complete" ? "Approve next" : "Approve"}
+        {state === "approved" ? "Executing" : state === "complete" ? "Approve next" : "Approve next"}
       </button>
-      <p className="readout px-1 text-[10px] leading-relaxed text-muted-foreground">
-        Releases the proposed trajectory to both arms. Dead-man switch remains active for the full
-        execution window.
+      <p className="readout px-1 text-[10px] leading-snug text-muted-foreground">
+        Releases the proposed trajectory to both arms.
       </p>
+
 
 
 
