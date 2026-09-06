@@ -279,9 +279,26 @@ function Console() {
             </div>
           </div>
 
-          <Panel label="AI confidence score" bodyClassName="p-0">
-            <ConfidenceGauge value={confidence} />
-          </Panel>
+          <div className="grid min-h-0 grid-rows-[auto_auto_minmax(0,1fr)] gap-2">
+            <Panel label="AI confidence · full operation" bodyClassName="p-0">
+              <ConfidenceGauge value={confidence} title="Operation" />
+            </Panel>
+            <Panel label="AI confidence · model segmentation" bodyClassName="p-0">
+              <ConfidenceGauge value={segConfidence} title="Segmentation" />
+            </Panel>
+            <Panel
+              label="Per-step confidence"
+              right={
+                <span className="readout text-[10px] text-primary">
+                  STEP {String(activeStep + 1).padStart(2, "0")}/{PIPELINE_STEPS.length}
+                </span>
+              }
+              bodyClassName="p-0"
+            >
+              <StepConfidence activeStep={activeStep} />
+            </Panel>
+          </div>
+
         </div>
       )}
     </main>
