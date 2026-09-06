@@ -83,13 +83,19 @@ function Console() {
     setProgress(0);
     setState("approved");
   }, []);
-  const onHalt = useCallback(() => setState("halted"), []);
-  const onOverride = useCallback(() => {
-    setState("awaiting");
+  const onDecline = useCallback(() => {
+    setState("halted");
     setProgress(0);
   }, []);
 
+  const teleop = mode === "Teleoperation";
   const confidence = state === "halted" ? 61.2 : 98.5;
+  const segConfidence = state === "halted" ? 72.4 : 96.7;
+  const activeStep = Math.min(
+    PIPELINE_STEPS.length - 1,
+    Math.floor((progress / 100) * PIPELINE_STEPS.length),
+  );
+
 
   return (
     <main className="flex h-screen flex-col gap-2 overflow-hidden bg-background p-2">
