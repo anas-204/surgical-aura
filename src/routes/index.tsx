@@ -15,6 +15,7 @@ import { TerminalLog } from "@/components/casa/TerminalLog";
 import { ViewSelectors, type OpMode } from "@/components/casa/ViewSelectors";
 import { SensorsAlarms } from "@/components/casa/SensorsAlarms";
 import { RecordControls } from "@/components/casa/RecordControls";
+import { StepConfidence, PIPELINE_STEPS } from "@/components/casa/StepConfidence";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -255,7 +256,7 @@ function Console() {
           </aside>
         </div>
       ) : (
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[184px_minmax(0,1fr)_260px]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[184px_minmax(0,1fr)_300px]">
           <Panel label="Telemetry metrics" bodyClassName="p-0" className="hidden lg:flex">
             <TelemetryMetrics />
           </Panel>
