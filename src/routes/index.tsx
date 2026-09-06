@@ -15,6 +15,7 @@ import { TerminalLog } from "@/components/casa/TerminalLog";
 import { ViewSelectors, type OpMode } from "@/components/casa/ViewSelectors";
 import { SensorsAlarms } from "@/components/casa/SensorsAlarms";
 import { RecordControls } from "@/components/casa/RecordControls";
+import { StepConfidence, PIPELINE_STEPS } from "@/components/casa/StepConfidence";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -83,13 +84,19 @@ function Console() {
     setProgress(0);
     setState("approved");
   }, []);
-  const onHalt = useCallback(() => setState("halted"), []);
-  const onOverride = useCallback(() => {
-    setState("awaiting");
+  const onDecline = useCallback(() => {
+    setState("halted");
     setProgress(0);
   }, []);
 
+  const teleop = mode === "Teleoperation";
   const confidence = state === "halted" ? 61.2 : 98.5;
+  const segConfidence = state === "halted" ? 72.4 : 96.7;
+  const activeStep = Math.min(
+    PIPELINE_STEPS.length - 1,
+    Math.floor((progress / 100) * PIPELINE_STEPS.length),
+  );
+
 
   return (
     <main className="flex h-screen flex-col gap-2 overflow-hidden bg-background p-2">
@@ -185,9 +192,15 @@ function Console() {
               right={
                 <span
                   className="readout text-[10px]"
-                  style={{ color: state === "halted" ? "var(--critical)" : "var(--safe)" }}
+                  style={{
+                    color: teleop
+                      ? "var(--muted-foreground)"
+                      : state === "halted"
+                        ? "var(--critical)"
+                        : "var(--safe)",
+                  }}
                 >
-                  CONF {confidence.toFixed(1)}%
+                  {teleop ? "DISABLED · TELEOP" : `CONF ${confidence.toFixed(1)}%`}
                 </span>
               }
               bodyClassName="p-0"
@@ -195,11 +208,12 @@ function Console() {
               <ControlPanel
                 state={state}
                 progress={progress}
+                disabled={teleop}
                 onApprove={onApprove}
-                onHalt={onHalt}
-                onOverride={onOverride}
+                onDecline={onDecline}
               />
             </Panel>
+
 
             <div className="panel-frame min-h-0 space-y-0 overflow-auto">
               <section className="border-b border-border p-3">
@@ -242,7 +256,7 @@ function Console() {
           </aside>
         </div>
       ) : (
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[184px_minmax(0,1fr)_260px]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-[184px_minmax(0,1fr)_300px]">
           <Panel label="Telemetry metrics" bodyClassName="p-0" className="hidden lg:flex">
             <TelemetryMetrics />
           </Panel>
@@ -266,9 +280,26 @@ function Console() {
             </div>
           </div>
 
-          <Panel label="AI confidence score" bodyClassName="p-0">
-            <ConfidenceGauge value={confidence} />
-          </Panel>
+          <div className="grid min-h-0 grid-rows-[auto_auto_minmax(0,1fr)] gap-2">
+            <Panel label="AI confidence · full operation" bodyClassName="p-0">
+              <ConfidenceGauge value={confidence} title="Operation" />
+            </Panel>
+            <Panel label="AI confidence · model segmentation" bodyClassName="p-0">
+              <ConfidenceGauge value={segConfidence} title="Segmentation" />
+            </Panel>
+            <Panel
+              label="Per-step confidence"
+              right={
+                <span className="readout text-[10px] text-primary">
+                  STEP {String(activeStep + 1).padStart(2, "0")}/{PIPELINE_STEPS.length}
+                </span>
+              }
+              bodyClassName="p-0"
+            >
+              <StepConfidence activeStep={activeStep} />
+            </Panel>
+          </div>
+
         </div>
       )}
     </main>
