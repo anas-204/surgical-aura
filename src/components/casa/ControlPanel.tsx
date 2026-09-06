@@ -1,28 +1,29 @@
-import { AlertTriangle, Check, Hand, Loader2, OctagonX, ShieldAlert } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 
 type State = "awaiting" | "approved" | "halted" | "complete";
 
 export function ControlPanel({
   state,
   progress,
+  disabled = false,
   onApprove,
-  onHalt,
-  onOverride,
+  onDecline,
 }: {
   state: State;
   progress: number;
+  disabled?: boolean;
   onApprove: () => void;
-  onHalt: () => void;
-  onOverride: () => void;
+  onDecline: () => void;
 }) {
-  const meta =
-    state === "awaiting"
+  const meta = disabled
+    ? { text: "Teleoperation — Operator In Direct Control", color: "var(--muted-foreground)", tag: "S1 · MANUAL" }
+    : state === "awaiting"
       ? { text: "Awaiting Operator Approval...", color: "var(--warning)", tag: "S3 · SUPERVISED" }
       : state === "approved"
         ? { text: "Command Released — Executing", color: "var(--safe)", tag: "S4 · AUTONOMOUS" }
         : state === "complete"
           ? { text: "Command Executed — Idle", color: "var(--safe)", tag: "S2 · IDLE" }
-          : { text: "Safety Halt Engaged", color: "var(--critical)", tag: "S0 · HALTED" };
+          : { text: "Command Declined — Motion Held", color: "var(--critical)", tag: "S0 · DECLINED" };
 
   return (
     <div className="flex h-full flex-col gap-3 p-3">
@@ -49,7 +50,7 @@ export function ControlPanel({
             {meta.text}
           </p>
         </div>
-        {state === "approved" || state === "complete" ? (
+        {!disabled && (state === "approved" || state === "complete") ? (
           <div className="mt-3">
             <div className="readout flex justify-between text-[10px] text-muted-foreground">
               <span>Execution</span>
@@ -65,61 +66,39 @@ export function ControlPanel({
         ) : null}
       </div>
 
-      <button
-        type="button"
-        onClick={onApprove}
-        disabled={state === "halted" || state === "approved"}
-        className="flex w-full items-center justify-center gap-2 rounded-sm border border-warning px-4 py-4 text-base font-bold uppercase tracking-[0.14em] text-warning-foreground transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
-        style={{
-          background: "linear-gradient(180deg, var(--warning), color-mix(in oklab, var(--warning) 78%, black))",
-          boxShadow: "0 0 22px color-mix(in oklab, var(--warning) 45%, transparent)",
-        }}
-      >
-        {state === "approved" ? (
-          <Loader2 className="h-5 w-5 animate-spin" strokeWidth={2.5} />
-        ) : (
-          <Check className="h-5 w-5" strokeWidth={3} />
-        )}
-        {state === "approved" ? "Executing" : "Approve next"}
-      </button>
+      <div className="mt-auto grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={onApprove}
+          disabled={disabled || state === "approved"}
+          className="flex items-center justify-center gap-2 rounded-sm border border-safe px-3 py-4 text-base font-bold uppercase tracking-[0.14em] text-safe-foreground transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+          style={{
+            background: "linear-gradient(180deg, var(--safe), color-mix(in oklab, var(--safe) 78%, black))",
+            boxShadow: "0 0 22px color-mix(in oklab, var(--safe) 40%, transparent)",
+          }}
+        >
+          {state === "approved" && !disabled ? (
+            <Loader2 className="h-5 w-5 animate-spin" strokeWidth={2.5} />
+          ) : (
+            <Check className="h-5 w-5" strokeWidth={3} />
+          )}
+          {state === "approved" && !disabled ? "Executing" : "Approve"}
+        </button>
 
-      <div className="mt-auto space-y-2">
         <button
           type="button"
-          onClick={onHalt}
-          className="hazard-stripes relative flex w-full items-center justify-center gap-2 rounded-sm border border-critical px-3 py-3 text-base font-bold uppercase tracking-[0.16em] text-critical-foreground transition-all hover:brightness-110"
+          onClick={onDecline}
+          disabled={disabled}
+          className="flex items-center justify-center gap-2 rounded-sm border border-critical px-3 py-4 text-base font-bold uppercase tracking-[0.14em] text-critical-foreground transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+          style={{
+            background: "linear-gradient(180deg, var(--critical), color-mix(in oklab, var(--critical) 78%, black))",
+            boxShadow: "0 0 22px color-mix(in oklab, var(--critical) 40%, transparent)",
+          }}
         >
-          <OctagonX className="h-4 w-4" strokeWidth={2.5} />
-          Safety halt
+          <X className="h-5 w-5" strokeWidth={3} />
+          Decline
         </button>
-        <button
-          type="button"
-          onClick={onOverride}
-          className="hazard-stripes relative flex w-full items-center justify-center gap-2 rounded-sm border border-critical px-3 py-3 text-base font-bold uppercase tracking-[0.16em] text-critical-foreground transition-all hover:brightness-110"
-        >
-          <Hand className="h-4 w-4" strokeWidth={2.5} />
-          Manual override
-        </button>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={onOverride}
-            className="flex items-center justify-center gap-1.5 rounded-sm border border-critical/50 px-2 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-critical transition-colors hover:bg-critical/15"
-          >
-            <ShieldAlert className="h-3.5 w-3.5" />
-            Take control
-          </button>
-          <button
-            type="button"
-            onClick={onOverride}
-            className="flex items-center justify-center gap-1.5 rounded-sm border border-warning/50 px-2 py-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-warning transition-colors hover:bg-warning/15"
-          >
-            <AlertTriangle className="h-3.5 w-3.5" />
-            Retract
-          </button>
-        </div>
       </div>
     </div>
   );
 }
-
