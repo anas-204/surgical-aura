@@ -191,9 +191,15 @@ function Console() {
               right={
                 <span
                   className="readout text-[10px]"
-                  style={{ color: state === "halted" ? "var(--critical)" : "var(--safe)" }}
+                  style={{
+                    color: teleop
+                      ? "var(--muted-foreground)"
+                      : state === "halted"
+                        ? "var(--critical)"
+                        : "var(--safe)",
+                  }}
                 >
-                  CONF {confidence.toFixed(1)}%
+                  {teleop ? "DISABLED · TELEOP" : `CONF ${confidence.toFixed(1)}%`}
                 </span>
               }
               bodyClassName="p-0"
@@ -201,11 +207,12 @@ function Console() {
               <ControlPanel
                 state={state}
                 progress={progress}
+                disabled={teleop}
                 onApprove={onApprove}
-                onHalt={onHalt}
-                onOverride={onOverride}
+                onDecline={onDecline}
               />
             </Panel>
+
 
             <div className="panel-frame min-h-0 space-y-0 overflow-auto">
               <section className="border-b border-border p-3">
